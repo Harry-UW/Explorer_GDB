@@ -15,7 +15,16 @@ namespace Explorer
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var vm = (FileSystemObjectViewModel)value;
-            return IconExtractor.GetIcon(vm.Path, true, vm.Type == FileSystemObjectType.Folder);
+            if (vm.ParentPath == "")
+            {
+                return IconExtractor.GetIcon(vm.Path, true, vm.Type == FileSystemObjectType.Folder);
+            }
+            else
+            {
+                Console.WriteLine("heer");
+                Console.WriteLine(vm.DisplayName);
+                return IconExtractor.GetIcon("/gdb", true, vm.Type == FileSystemObjectType.GDB);
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
