@@ -15,14 +15,12 @@ namespace Explorer
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var vm = (FileSystemObjectViewModel)value;
-            if (vm.ParentPath == "")
+            if (vm.ParentPath == "")  // for general file type
             {
                 return IconExtractor.GetIcon(vm.Path, true, vm.Type == FileSystemObjectType.Folder);
             }
-            else
+            else // for gdb file type
             {
-                Console.WriteLine("heer");
-                Console.WriteLine(vm.DisplayName);
                 return IconExtractor.GetIcon("/gdb", true, vm.Type == FileSystemObjectType.GDB);
             }
         }

@@ -120,8 +120,24 @@ namespace Explorer
         void Initialize()
         {
             if (Type == FileSystemObjectType.Folder && CheckChildObject())
-                AddSpecialChild();
-            if (Type == FileSystemObjectType.GDB)
+            {
+                if (ShowFile.check_gdb(Path))  //对于gdb文件夹
+                {
+                    Geodatabase geo = Geodatabase.Open(Path);
+                    if (geo.GetChildDatasets(@"\", "Feature Class").Length != 0 || geo.GetChildDatasets(@"\", "Feature Dataset").Length != 0)
+                    {
+                        AddSpecialChild();
+                    }
+                    geo.Close();
+                }
+                else //对于普通文件夹
+                {
+                    AddSpecialChild();
+                }
+            }
+
+
+            if (Type == FileSystemObjectType.GDB) //对于GDB内feature dataset的文件夹
             {
                 Geodatabase geo = Geodatabase.Open(ParentPath);
                 if (geo.GetChildDatasets(@Path, "Feature Class").Length != 0 || geo.GetChildDatasets(@Path, "Feature Dataset").Length != 0)
@@ -207,7 +223,7 @@ namespace Explorer
 
                     foreach (var fds in geo.GetChildDatasets(@"\", "Feature Dataset"))
                     {
-                        _Children.Add(new FileSystemObjectViewModel(fds, GetFileName(fds), FileSystemObjectType.GDB, Path));                        
+                        _Children.Add(new FileSystemObjectViewModel(fds, GetFileName(fds), FileSystemObjectType.GDB, Path));
                     }
                     geo.Close();
                 }
@@ -273,8 +289,8 @@ namespace Explorer
         public static string GetFileName(string path)
         {
             return System.IO.Path.GetFileName(path);   //保留扩展名
-           
-            
+
+
             //string name = System.IO.Path.GetFileName(path);  // 不保留扩展名
             // int ld = name.LastIndexOf(".");
             // if (ld < 0)
